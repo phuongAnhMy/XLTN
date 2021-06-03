@@ -1,0 +1,265 @@
+<!-- <html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Simple Recorder</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js"></script>
+    <style>
+        h2 {
+            text-align: center;
+            color: #046c0b;
+            padding-top: 5rem;
+            font-size: 5rem;
+        }
+
+        login_image {
+            width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+
+        input {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 50%;
+            
+        }
+
+        ;
+
+
+        div div p {
+            display: block;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            text-align: center;
+            
+        }
+
+        ;
+
+        .account {
+            text-align: center;
+            font-size: 13px;
+            padding-top: 10px;
+            color: #7f7d7d;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        button {
+            width: 20%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            background: linear-gradient(to right, #046c0b 15%, #f7e702 100%);
+            color: rgb(255, 255, 250);
+            border-radius: 10mm;
+            font-size: 20px;
+
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #05910e 15%, #fbff13 100%);
+        }
+
+        div form {
+            width: 40%;
+            margin: auto;
+            background: #ff9fff;
+            padding: 40px 55px 45px 55px;
+            border-radius: 15px;
+            transition: all .3s;
+        }
+        
+        #sound-clips {
+            align-content: center;
+            text-align: center;
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div className = "form">
+        <h2>Sign in</h2>
+        <div className="infor">
+            <p>Username</p>
+            <br>
+            <input className="infor" type="email" id="email" placeholder="Username"></input>
+        </div>
+        <button id="record">Record</button>
+        <button id="stop">Stop</button>
+        <div id="sound-clips">
+        </div>
+    </div>
+</body>
+
+     <div className="signin-up ">
+        <div className="head">
+             <img className="login_image" src="..//../image/logo.png" alt="" /> 
+            <h1>Sign in</h1>
+        </div>
+        <div className="info">
+            <label htmlFor="email">Username</label>
+            <input className="infor" type="email" id="email" placeholder="Username"></input>
+        </div>
+        <button id="record">Record</button>
+        <button id="stop">Stop</button>
+        <div id="sound-clips">
+        </div>
+    </div> 
+    </body>
+
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Speech Recognition in Python</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    #app>*{
+        display: block;
+        padding: 15px;
+    }
+
+</style>
+<body>
+    <div id = "app">
+        <div id="form-container">
+            <h1>Voice Verification</h1>
+            <form method="post" enctype="multipart/form-data">
+                <label for = "username" required>Username:  </label>
+                <input type = "text" name ="username" placeholder="Enter Username"/> <br/>
+                <label for = "file">Audio:  </label>
+    
+                <input type="file" name="file"/> <br>
+    
+                <input type="submit" id="submitButton" value="Submit"/>
+            </form>
+        </div>
+        <div id = "record-container">
+            <h1>Voice Recorder</h1>
+            <button id = "record">Record</button>
+            <button id = "stop">Stop</button>
+            <div id = "sound-clips">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = () => {
+        if (navigator.mediaDevices) {
+            console.log('getUserMedia supported.');
+        }
+        record = document.getElementById("record")
+        stop = document.getElementById("stop")
+        soundClips = document.getElementById("sound-clips")
+
+        var constraints = { audio: true };
+        var chunks = [];
+        var options = { mimeType: "video/wav; codecs=vp9" };
+
+        navigator.mediaDevices.getUserMedia(constraints, options)
+        .then(function(stream) {
+            var mediaRecorder = new MediaRecorder(stream);
+
+            console.log("Stream: ", stream);
+
+            // TODO-1: Start Record
+            record.onclick = function() {
+                mediaRecorder.start();
+                console.log(mediaRecorder.state);
+                console.log("recorder started");
+                record.style.background = "red";
+                record.style.color = "black";
+            }
+            // TODO-2: Stop Record
+
+            stop.onclick = function() {
+                mediaRecorder.stop();
+                console.log(mediaRecorder.state);
+                console.log("recorder stopped");
+                record.style.background = "";
+                record.style.color = "";
+            }
+
+            // TODO-3: On Stop Record Event
+
+            mediaRecorder.onstop = function(e) {
+                console.log("data available after MediaRecorder.stop() called.");
+                
+                // TODO-4: Create an element for audio file 
+                var clipName = prompt('Enter a name for your sound clip');
+
+                var clipContainer = document.createElement('article');
+                var clipLabel = document.createElement('p');
+                var audio = document.createElement('audio');
+                // var buttonsList = document.createElement("div")
+                var deleteButton = document.createElement('button');
+                var downloadButton = document.createElement('button');
+
+
+                clipContainer.classList.add('clip');
+                audio.setAttribute('controls', '');
+                deleteButton.innerHTML = "Delete";
+                downloadButton.innerHTML = "Download"
+              
+                clipLabel.innerHTML = clipName;
+
+                clipContainer.appendChild(clipLabel);
+                clipContainer.appendChild(audio);
+                clipContainer.appendChild(deleteButton)
+                clipContainer.appendChild(downloadButton)
+
+                soundClips.appendChild(clipContainer);
+
+                // TODO: save file in wav file
+                audio.controls = true;
+                var blob = new Blob(chunks, { 'mimetype' : 'audio/wav' });
+                chunks = [];
+                var audioURL = URL.createObjectURL(blob);
+                audio.src = audioURL;
+                console.log("recorder stopped");
+
+                // Delete file Event
+                deleteButton.onclick = function(e) {
+                    evtTgt = e.target;
+                    evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+                }
+
+                // Download Event
+                downloadButton.onclick = function(e){
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    a.href = audioURL;
+                    a.download = clipName + ".wav";
+                    a.click();
+                    window.URL.revokeObjectURL(audioURL);
+                }
+            }
+
+            mediaRecorder.ondataavailable = function(e) {
+                chunks.push(e.data);
+            }
+
+        }).catch( (error) => {
+            console.log('Error occured: ', error);
+        })
+
+    }
+    </script>
+
+</body>
+   
+</html>
